@@ -27,6 +27,7 @@ export default function PagePages() {
 	const [ view, setView ] = useState( {
 		type: 'list',
 		search: '',
+		filters: {},
 		page: 0,
 		perPage: 5,
 		sort: {
