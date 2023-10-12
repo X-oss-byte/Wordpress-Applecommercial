@@ -25,7 +25,7 @@ import {
 	BlockControls,
 	InspectorControls,
 	__experimentalDuotoneControl as DuotoneControl,
-	useSetting,
+	useSettings,
 } from '../components';
 import {
 	getDuotoneFilter,
@@ -45,20 +45,20 @@ const EMPTY_ARRAY = [];
 extend( [ namesPlugin ] );
 
 function useMultiOriginPresets( { presetSetting, defaultSetting } ) {
-	const disableDefault = ! useSetting( defaultSetting );
-	const userPresets =
-		useSetting( `${ presetSetting }.custom` ) || EMPTY_ARRAY;
-	const themePresets =
-		useSetting( `${ presetSetting }.theme` ) || EMPTY_ARRAY;
-	const defaultPresets =
-		useSetting( `${ presetSetting }.default` ) || EMPTY_ARRAY;
+	const [ enableDefault, userPresets, themePresets, defaultPresets ] =
+		useSettings( [
+			defaultSetting,
+			`${ presetSetting }.custom`,
+			`${ presetSetting }.theme`,
+			`${ presetSetting }.default`,
+		] );
 	return useMemo(
 		() => [
-			...userPresets,
-			...themePresets,
-			...( disableDefault ? EMPTY_ARRAY : defaultPresets ),
+			...( userPresets || EMPTY_ARRAY ),
+			...( themePresets || EMPTY_ARRAY ),
+			...( ( enableDefault && defaultPresets ) || EMPTY_ARRAY ),
 		],
-		[ disableDefault, userPresets, themePresets, defaultPresets ]
+		[ enableDefault, userPresets, themePresets, defaultPresets ]
 	);
 }
 
@@ -100,9 +100,13 @@ function DuotonePanel( { attributes, setAttributes, name } ) {
 		presetSetting: 'color.palette',
 		defaultSetting: 'color.defaultPalette',
 	} );
-	const disableCustomColors = ! useSetting( 'color.custom' );
+	const [ enableCustomColors, enableCustomDuotone ] = useSettings( [
+		'color.custom',
+		'color.customDuotone',
+	] );
+	const disableCustomColors = ! enableCustomColors;
 	const disableCustomDuotone =
-		! useSetting( 'color.customDuotone' ) ||
+		! enableCustomDuotone ||
 		( colorPalette?.length === 0 && disableCustomColors );
 
 	if ( duotonePalette?.length === 0 && disableCustomDuotone ) {
