@@ -66,10 +66,15 @@ function HeaderMenu( { dataView, header } ) {
 	const isSortable = !! header.column.getCanSort();
 	const isHidable = !! header.column.getCanHide();
 	const isFilterable = !! header.column.getCanFilter();
-	const isFilterableBySetList =
-		header.column.columnDef.type === 'set' &&
+	const isFilterableByInFilter =
 		header.column.columnDef.setList &&
-		header.column.columnDef.setList.length > 0;
+		header.column.columnDef.setList.length > 0 &&
+		header.column.columnDef.filters.in;
+	const isFilterableByNotInFilter =
+		header.column.columnDef.setList &&
+		header.column.columnDef.setList.length > 0 &&
+		header.column.columnDef.filters.notIn;
+
 	if ( ! isSortable && ! isHidable && ! isFilterable ) {
 		return text;
 	}
@@ -144,11 +149,11 @@ function HeaderMenu( { dataView, header } ) {
 					>
 						{ __( 'Search' ) }
 					</DropdownMenuItemV2>
-					{ isFilterableBySetList && (
+					{ isFilterableByInFilter && (
 						<DropdownSubMenuV2
 							trigger={
 								<DropdownSubMenuTriggerV2>
-									{ __( 'Equals to' ) }
+									{ __( 'In' ) }
 								</DropdownSubMenuTriggerV2>
 							}
 						>
@@ -159,15 +164,62 @@ function HeaderMenu( { dataView, header } ) {
 								<DropdownMenuItemV2
 									key={ element.name }
 									suffix={
-										header.column.getFilterValue() ===
-											element.id && (
+										dataView.getState().columnFilters[
+											header.column.columnDef.filters
+												.notIn
+										] === element.id && (
 											<Icon icon={ check } />
 										)
 									}
 									onSelect={ () => {
-										header.column.setFilterValue(
-											element.id
-										);
+										dataView.setColumnFilters( [
+											...dataView.getState()
+												.columnFilters,
+											{
+												id: header.column.columnDef
+													.filters.in,
+												value: element.id,
+											},
+										] );
+									} }
+								>
+									{ element.name }
+								</DropdownMenuItemV2>
+							) ) }
+						</DropdownSubMenuV2>
+					) }
+					{ isFilterableByNotInFilter && (
+						<DropdownSubMenuV2
+							trigger={
+								<DropdownSubMenuTriggerV2>
+									{ __( 'Not In' ) }
+								</DropdownSubMenuTriggerV2>
+							}
+						>
+							{ [
+								{ id: undefined, name: __( 'None' ) },
+								...header.column.columnDef.setList,
+							].map( ( element ) => (
+								<DropdownMenuItemV2
+									key={ element.name }
+									suffix={
+										dataView.getState().columnFilters[
+											header.column.columnDef.filters
+												.notIn
+										] === element.id && (
+											<Icon icon={ check } />
+										)
+									}
+									onSelect={ () => {
+										dataView.setColumnFilters( [
+											...dataView.getState()
+												.columnFilters,
+											{
+												id: header.column.columnDef
+													.filters.notIn,
+												value: element.id,
+											},
+										] );
 									} }
 								>
 									{ element.name }

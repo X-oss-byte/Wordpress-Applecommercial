@@ -57,6 +57,7 @@ export default function PagePages() {
 			orderby: view.sort?.field,
 			search: view.search,
 			author: view.filters?.author,
+			author_exclude: view.filters?.author_exclude,
 			status: [ 'publish', 'draft' ],
 		} ),
 		[ view ]
@@ -135,8 +136,11 @@ export default function PagePages() {
 						</a>
 					);
 				},
-				type: 'set',
 				setList: authors,
+				filters: {
+					in: 'author',
+					notIn: 'author_exclude',
+				},
 				enableColumnFiltering: true,
 			},
 			{
