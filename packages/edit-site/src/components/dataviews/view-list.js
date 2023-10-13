@@ -22,6 +22,7 @@ import {
 	arrowUp,
 	arrowDown,
 	moreVertical,
+	search,
 } from '@wordpress/icons';
 import {
 	Button,
@@ -44,6 +45,8 @@ const {
 	DropdownMenuGroupV2,
 	DropdownMenuItemV2,
 	DropdownMenuSeparatorV2,
+	DropdownSubMenuV2,
+	DropdownSubMenuTriggerV2,
 } = unlock( componentsPrivateApis );
 
 const EMPTY_OBJECT = {};
@@ -62,7 +65,11 @@ function HeaderMenu( { dataView, header } ) {
 	);
 	const isSortable = !! header.column.getCanSort();
 	const isHidable = !! header.column.getCanHide();
-	if ( ! isSortable && ! isHidable ) {
+	const isFilterable = !! header.column.getCanFilter();
+	const isFilterableBySetList =
+		header.column.columnDef.type === 'set' &&
+		header.column.columnDef.setList;
+	if ( ! isSortable && ! isHidable && ! isFilterable ) {
 		return text;
 	}
 	const sortedDirection = header.column.getIsSorted();
@@ -121,6 +128,38 @@ function HeaderMenu( { dataView, header } ) {
 				>
 					{ __( 'Hide' ) }
 				</DropdownMenuItemV2>
+			) }
+			{ ( isSortable || isHidable ) && isFilterable && (
+				<DropdownMenuSeparatorV2 />
+			) }
+			{ isFilterable && (
+				<DropdownMenuGroupV2>
+					<DropdownMenuItemV2
+						key={ 'filter-set' }
+						prefix={ <Icon icon={ search } /> }
+						onSelect={ () => {
+							// todo: implement search
+						} }
+					>
+						{ __( 'Search' ) }
+					</DropdownMenuItemV2>
+					{ isFilterableBySetList && (
+						<DropdownSubMenuV2
+							trigger={
+								<DropdownSubMenuTriggerV2>
+									{ __( 'Equals to' ) }
+								</DropdownSubMenuTriggerV2>
+							}
+						>
+							<DropdownMenuItemV2 key={ 'all' }>
+								{ __( 'All' ) }
+							</DropdownMenuItemV2>
+							<DropdownMenuItemV2 key={ 'none' }>
+								{ __( 'None' ) }
+							</DropdownMenuItemV2>
+						</DropdownSubMenuV2>
+					) }
+				</DropdownMenuGroupV2>
 			) }
 		</DropdownMenuV2>
 	);

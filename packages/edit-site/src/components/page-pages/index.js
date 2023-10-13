@@ -95,6 +95,7 @@ export default function PagePages() {
 						/>
 					) : null,
 				enableSorting: false,
+				enableColumnFilter: false,
 			},
 			{
 				header: __( 'Title' ),
@@ -137,7 +138,7 @@ export default function PagePages() {
 				},
 				type: 'set',
 				setList: authors, // Elements should have id and name as properties. They should be unique.
-				enableFiltering: true,
+				enableColumnFilter: true,
 			},
 			{
 				header: __( 'Status' ),
