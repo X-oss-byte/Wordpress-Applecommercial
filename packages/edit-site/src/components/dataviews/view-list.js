@@ -65,15 +65,16 @@ function HeaderMenu( { dataView, header } ) {
 	);
 	const isSortable = !! header.column.getCanSort();
 	const isHidable = !! header.column.getCanHide();
-	const isFilterable = !! header.column.getCanFilter();
-	const isFilterableByInFilter =
+	const hasInFilter =
 		header.column.columnDef.setList &&
 		header.column.columnDef.setList.length > 0 &&
-		header.column.columnDef.filters.in;
-	const isFilterableByNotInFilter =
+		header.column.columnDef?.filters?.in;
+	const hasNotInFilter =
 		header.column.columnDef.setList &&
 		header.column.columnDef.setList.length > 0 &&
-		header.column.columnDef.filters.notIn;
+		header.column.columnDef?.filters?.notIn;
+	const hasSearchFilter = header.column.columnDef.filters?.search;
+	const isFilterable = hasInFilter || hasNotInFilter || hasSearchFilter;
 
 	if ( ! isSortable && ! isHidable && ! isFilterable ) {
 		return text;
@@ -140,16 +141,18 @@ function HeaderMenu( { dataView, header } ) {
 			) }
 			{ isFilterable && (
 				<DropdownMenuGroupV2>
-					<DropdownMenuItemV2
-						key={ 'filter-set' }
-						prefix={ <Icon icon={ search } /> }
-						onSelect={ () => {
-							// todo: implement search
-						} }
-					>
-						{ __( 'Search' ) }
-					</DropdownMenuItemV2>
-					{ isFilterableByInFilter && (
+					{ hasSearchFilter && (
+						<DropdownMenuItemV2
+							key={ 'filter-search' }
+							prefix={ <Icon icon={ search } /> }
+							onSelect={ () => {
+								// TODO: implement search.
+							} }
+						>
+							{ __( 'Search' ) }
+						</DropdownMenuItemV2>
+					) }
+					{ hasInFilter && (
 						<DropdownSubMenuV2
 							trigger={
 								<DropdownSubMenuTriggerV2>
@@ -188,7 +191,7 @@ function HeaderMenu( { dataView, header } ) {
 							) ) }
 						</DropdownSubMenuV2>
 					) }
-					{ isFilterableByNotInFilter && (
+					{ hasNotInFilter && (
 						<DropdownSubMenuV2
 							trigger={
 								<DropdownSubMenuTriggerV2>
