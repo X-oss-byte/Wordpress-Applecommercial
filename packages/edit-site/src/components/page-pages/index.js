@@ -136,7 +136,7 @@ export default function PagePages() {
 					);
 				},
 				type: 'set',
-				setList: authors,
+				setList: authors, // Elements should have id and name as properties. They should be unique.
 				enableFiltering: true,
 			},
 			{
