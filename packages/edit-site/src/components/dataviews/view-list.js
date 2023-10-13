@@ -158,6 +158,12 @@ function HeaderMenu( { dataView, header } ) {
 							].map( ( element ) => (
 								<DropdownMenuItemV2
 									key={ element.name }
+									suffix={
+										header.column.getFilterValue() ===
+											element.id && (
+											<Icon icon={ check } />
+										)
+									}
 									onSelect={ () => {
 										header.column.setFilterValue(
 											element.id
