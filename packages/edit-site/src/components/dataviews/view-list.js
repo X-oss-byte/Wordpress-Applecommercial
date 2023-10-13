@@ -68,7 +68,8 @@ function HeaderMenu( { dataView, header } ) {
 	const isFilterable = !! header.column.getCanFilter();
 	const isFilterableBySetList =
 		header.column.columnDef.type === 'set' &&
-		header.column.columnDef.setList;
+		header.column.columnDef.setList &&
+		header.column.columnDef.setList.length > 0;
 	if ( ! isSortable && ! isHidable && ! isFilterable ) {
 		return text;
 	}
@@ -151,12 +152,14 @@ function HeaderMenu( { dataView, header } ) {
 								</DropdownSubMenuTriggerV2>
 							}
 						>
-							<DropdownMenuItemV2 key={ 'all' }>
-								{ __( 'All' ) }
-							</DropdownMenuItemV2>
-							<DropdownMenuItemV2 key={ 'none' }>
-								{ __( 'None' ) }
-							</DropdownMenuItemV2>
+							{ [
+								{ id: undefined, name: __( 'Any' ) },
+								...header.column.columnDef.setList,
+							].map( ( element ) => (
+								<DropdownMenuItemV2 key={ element.name }>
+									{ element.name }
+								</DropdownMenuItemV2>
+							) ) }
 						</DropdownSubMenuV2>
 					) }
 				</DropdownMenuGroupV2>
